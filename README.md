@@ -29,7 +29,9 @@ pip install huggingface_hub[hf_xet]
 강점: 9B급이지만 GQA·로컬/글로벌 어텐션 등 추론 효율 개선 아키텍처로 설계. 경량 양자화(FP8/INT4) 및 vLLM 호환성이 좋아 속도·안정성 균형형 후보.
 
 ## Test2
-서버 사양 확정에 따른 재분류 및 50개 프롬프트 실험
+서버 사양 확정에 따른 재분류 및 50개 프롬프트 실험<br>
+GPU : NVIDIA GeForce RTX 4070 SUPER<BR>
+메모리 : 60
 <ul>
   <li>mistralai/Mistral-7B-Instruct-v0.3</li>
   <li>meta-llama/Llama-3.1-8B-Instruct</li>
