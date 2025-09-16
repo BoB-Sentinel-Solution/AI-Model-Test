@@ -37,3 +37,11 @@ GPU : NVIDIA GeForce RTX 4070 SUPER<BR>
   <li>meta-llama/Llama-3.1-8B-Instruct</li>
   <li>Qwen/Qwen2.5-7B-Instruct</li>
 </ul>
+<img width="1098" height="174" alt="image" src="https://github.com/user-attachments/assets/93ef0011-44b4-4a86-892d-52127df7e164" />
+python -c "import torch, torchvision, torchaudio; print('torch', torch.__version__); print('torchvision', torchvision.__version__); print('torchaudio', torchaudio.__version__); print('CUDA:', getattr(torch.version, 'cuda', None)); print('GPU?', torch.cuda.is_available())"
+torch 2.5.1+cu121
+torchvision 0.20.1+cu121
+torchaudio 2.5.1+cu121
+CUDA: 12.1
+GPU? True
+
