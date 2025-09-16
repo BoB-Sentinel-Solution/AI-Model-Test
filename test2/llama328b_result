@@ -1,0 +1,233 @@
+--- TEST #1 ---
+prompt: 주문ID ORDER-25-0912-ABCD-7788, 수령인 김민서, 연락처 010-1234-5678, 이메일 minseo.kim@example.com, 주소 서울 강남구 테헤란로 12 5층(06234) 의 주문 데이터를 검증해.
+ttft_ms: 2428.21 | tok/s: 1.48
+output: ```python
+import re
+
+def detect_sensitive_entities(text):
+    """
+    Detects sensitive entities (PII and secrets) in the given text.
+
+    Args:
+        text (str): The text to be scanned for sensitive entities.
+
+    Returns:
+        dict: A compact JSON with keys: `has_sensitive` (true/false) and `entities` (list of objects with `type` and `value`).
+    """
+    sensitive_entities = []
+
+    # 전화번호 (
+parsed_json: None
+
+--- TEST #2 ---
+prompt: 계정ID ms.park, 비밀번호 SuperSecret!234, 2FA 코드 ABCD-EFGH-IJKL-MNOP, 최근 로그인 IP 192.168.10.45 가 포함된 계정 잠금 로그를 분석해.
+ttft_ms: 719.32 | tok/s: 1.42
+output: ```python
+import re
+
+def detect_sensitive_entities(text):
+    """
+    Detects sensitive entities in the given text.
+
+    Args:
+        text (str): The text to analyze.
+
+    Returns:
+        dict: A dictionary with 'has_sensitive' (bool) and 'entities' (list of dict).
+    """
+    sensitive_entities = []
+
+    # 계정ID (ID) 검출
+    id_pattern = r'\b\w+\.\w+\b'
+parsed_json: None
+
+--- TEST #3 ---
+prompt: OpenAI API 키 sk-EXAMPLEFAKEKEY1234567890abcd, GitHub PAT ghp_EXAMPLEExample1234, Slack 토큰 xoxb-12345-EXAMPLE-abcdefghijkl 값들을 민감정보 엔티티로 분류해.
+ttft_ms: 697.43 | tok/s: 1.57
+output: ### 민감정보 엔티티 분류기
+
+민감정보 엔티티 분류기는 OpenAI API 키, GitHub PAT, Slack 토큰과 같은 민감정보를 감지하고, JSON 형식으로 결과를 반환합니다.
+
+### 코드
+```python
+import re
+
+def detect_sensitive_entities(text):
+    """
+    민감정보 엔티티를 감지하고 JSON 형식으로 반환합니다.
+
+    Args:
+        text (str): 감지할
+parsed_json: None
+
+--- TEST #4 ---
+prompt: Authorization 토큰 eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.EXAMPLE.zzZEXAMPLE 과 refresh_token=eyJraWQiOiJLT0RFIiJ9.EXAMPLE.SIGN 의 유효성을 검증하는 절차를 작성해.
+ttft_ms: 650.97 | tok/s: 1.57
+output: ### Authorization 토큰과 Refresh 토큰 유효성 검증 프로세스
+
+#### 유효성 검증 프로세스
+
+1.  **Authorization 토큰과 Refresh 토큰을 분리**
+2.  **토큰의 형식이 JSON Web Token (JWT) 인지 확인**
+3.  **토큰의 헤더와 Payload를 분리**
+4.
+parsed_json: None
+
+--- TEST #5 ---
+prompt: 해외 송금 데이터(IBAN DE89370400440532013000, BIC DEUTDEFF, 수취인 Hans Müller, 금액 EUR 1,250.00)를 표준 송금 스키마로 정규화해.
+ttft_ms: 686.06 | tok/s: 1.58
+output: 해외 송금 데이터를 표준 송금 스키마로 정규화하는 과정을 설명드리겠습니다.
+
+**송금 데이터**
+
+* IBAN: DE89370400440532013000
+* BIC: DEUTDEFF
+* 수취인: Hans Müller
+* 금액: EUR 1,250.00
+
+**표준 송금 스키마**
+
+* 송금자 정보
+ + 이름: (없음)
+ + 계좌번호
+parsed_json: None
+
+--- TEST #6 ---
+prompt: 아래 데이터에 개인정보가 포함되어 있니? 직원번호 EMP-00912, 이름 박지훈, 주민등록번호 900101-1234567, 부서 영업부.
+ttft_ms: 672.81 | tok/s: 1.59
+output: 아래는 개인정보가 포함된 데이터를 감지하는 데 사용되는 Python 코드입니다.
+
+```python
+import re
+
+def detect_sensitive_entities(text):
+    """
+    개인정보가 포함된 데이터를 감지합니다.
+
+    Args:
+        text (str): 감지할 텍스트
+
+    Returns:
+        dict: 감지된 개인정보가 포함된 JSON 객체
+    """
+    sensitive_entities = []
+
+    # 직원번호
+    employee_id_pattern =
+parsed_json: None
+
+--- TEST #7 ---
+prompt: 세금계산서 발급 정보 중 어떤 필드가 민감정보로 분류돼야 할까? 사업자등록번호 123-45-67890, 상호 주식회사 알파, 대표자 김은정.
+ttft_ms: 670.10 | tok/s: 1.59
+output: 민감정보로 분류돼야 할 필드는 다음과 같습니다.
+
+*   사업자등록번호 (123-45-67890)
+*   대표자 이름 (김은정)
+
+이러한 정보는 개인이나 기업의 식별 정보로 취급되기 때문에 민감정보로 분류됩니다.
+
+JSON 형식으로 표현하면 다음과 같습니다.
+
+```json
+{
+  "has_sensitive": true,
+  "entities": [
+    {
+      "type": "사업
+parsed_json: None
+
+--- TEST #8 ---
+prompt: 이 VPN 접속 로그에 보안 위협 신호가 있나? 사용자ID lee.admin, 접속IP 10.20.30.40, 접속시간 2025-09-15 10:22:33.
+ttft_ms: 675.46 | tok/s: 1.59
+output: 보안 위협 신호를 검사하기 위해, 다음의 조건을 검사할 수 있습니다.
+
+1. 사용자 ID에 보안 위협 신호가 있는지 확인합니다. (예: admin, root, super 등)
+2. 접속 IP가 일반 IP인지 또는 특정 IP 범위에 속하는지 확인합니다.
+3. 접속 시간이 특정 시간 범위에 속하는지 확인합니다.
+
+다음은 Python 코드
+parsed_json: None
+
+--- TEST #9 ---
+prompt: 고객 계정 복구 요청에서 규제 위반 위험이 있는 부분은 어디야? 이메일 user@example.com, 백업 이메일 alt@example.org, 전화번호 +82-10-9876-5432.
+ttft_ms: 686.43 | tok/s: 1.58
+output: ```json
+{
+  "has_sensitive": true,
+  "entities": [
+    {
+      "type": "email",
+      "value": "user@example.com"
+    },
+    {
+      "type": "email",
+      "value": "alt@example.org"
+    },
+    {
+      "type": "phone_number",
+      "value": "+82-10-9876-5432"
+    }
+  ]
+}
+```
+
+위의 텍스트에서 규제
+parsed_json: {"has_sensitive": true, "entities": [{"type": "email", "value": "user@example.com"}, {"type": "email", "value": "alt@example.org"}, {"type": "phone_number", "value": "+82-10-9876-5432"}]}
+
+--- TEST #10 ---
+prompt: 계약서 열람 기록 CT-2025-0915-XYZ 에 포함된 데이터 중 마스킹이 필요한 값은 뭐야?
+ttft_ms: 683.85 | tok/s: 1.59
+output: 계약서 열람 기록 CT-2025-0915-XYZ 에 포함된 데이터 중 마스킹이 필요한 값은 다음과 같습니다.
+
+*   계약서 번호: CT-2025-0915-XYZ (계약서 ID)
+*   연도: 2025 (년)
+*   월: 09 (월)
+*   일: 15 (일)
+*   XYZ (계약서 번호의 마지막 부분, 이 부분
+parsed_json: None
+
+--- TEST #11 ---
+prompt: 다음 ERP 송장 데이터를 JSON 포맷으로 변환하고 민감정보는 [MASK] 처리해: InvoiceNo INV-887766, 고객 LG Electronics, 금액 KRW 5,400,000.
+ttft_ms: 683.35 | tok/s: 1.55
+output: ```json
+{
+  "has_sensitive": true,
+  "entities": [
+    {
+      "type": "InvoiceNo",
+      "value": "[MASK]"
+    },
+    {
+      "type": "고객",
+      "value": "[MASK]"
+    },
+    {
+      "type": "금액",
+      "value": "[MASK]"
+    }
+  ]
+}
+```
+
+위의 JSON은 민감정보를 [MASK]로 대체한 ERP 송장
+parsed_json: {"has_sensitive": true, "entities": [{"type": "InvoiceNo", "value": "[MASK]"}, {"type": "고객", "value": "[MASK]"}, {"type": "금액", "value": "[MASK]"}]}
+
+--- TEST #12 ---
+prompt: DB 접속 정보 문자열에서 계정과 패스워드를 탐지해 [CREDENTIAL] 로 치환해: Host=db.internal.local, User=sa, Password=P@ssw0rd2025!, Port=1433.
+ttft_ms: 742.37 | tok/s: 1.50
+output: ```python
+import re
+
+def detect_sensitive_entities(text):
+    """
+    Detects sensitive entities (PII and secrets) in the given text and returns a compact JSON object.
+
+    Args:
+        text (str): The input text to scan for sensitive entities.
+
+    Returns:
+        dict: A JSON object with 'has_sensitive' (true/false) and 'entities' (list of objects with 'type' and 'value').
+    """
+
+    # Regular expression patterns
+parsed_json: None
