@@ -45,3 +45,19 @@ torchaudio 2.5.1+cu121
 CUDA: 12.1
 GPU? True
 
+## Test3
+정밀 테스트
+
+지표 산출:
+
+JSON 유효성률(파싱 성공 비율)
+
+Positive rate(has_sensitive=True 비율)
+
+엔티티 개수 평균/타입 분포
+
+TTFT p50/p95(첫 토큰까지 시간, ms)
+
+tok/s p50/p95(토큰 생성 속도)
+
+정상 프롬프트 FPR(정상인데 민감이라고 판단한 비율)
