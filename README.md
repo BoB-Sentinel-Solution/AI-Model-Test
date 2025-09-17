@@ -61,3 +61,11 @@ TTFT p50/p95(첫 토큰까지 시간, ms)
 tok/s p50/p95(토큰 생성 속도)
 
 정상 프롬프트 FPR(정상인데 민감이라고 판단한 비율)
+
+```
+# Qwen 7B, 기본 벤치 전부 실행
+python evaluator.py --model Qwen/Qwen2.5-7B-Instruct
+
+# Qwen 3B
+python evaluator.py --model Qwen/Qwen2.5-3B-Instruct
+```
