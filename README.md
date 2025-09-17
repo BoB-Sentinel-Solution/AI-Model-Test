@@ -68,4 +68,10 @@ python evaluator.py --model Qwen/Qwen2.5-7B-Instruct
 
 # Qwen 3B
 python evaluator.py --model Qwen/Qwen2.5-3B-Instruct
+
+python evaluator.py --model MLP-KTLim/Llama-3.2-Korean-Bllossom-3B
+python evaluator.py --model MLP-KTLim/llama-3-Korean-Bllossom-8B
+
+python evaluator.py --model mistralai/Mistral-7B-Instruct-v0.3
+
 ```
