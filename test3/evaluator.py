@@ -20,7 +20,7 @@ from transformers.utils import is_flash_attn_2_available
 
 SYS_PROMPT = (
     """
-     You are a strict whitelist-only detector for sensitive entities.
+     You are a strict whitelist-only detector for specific entities.
 
     Return ONLY a compact JSON with these keys:
     - has_sensitive: true or false
