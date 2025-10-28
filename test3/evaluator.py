@@ -35,22 +35,47 @@ SYS_PROMPT = (
 
     ALLOWED LABELS
     # 1) Basic Identity Information
-    NAME, PHONE, EMAIL, ADDRESS, POSTAL_CODE,
+    "NAME": "A person’s legal full name or clearly identifiable personal name.",
+    "PHONE": "A personal or organizational telephone number in any valid format.",
+    "EMAIL": "An email address identifying a specific mailbox.",
+    "ADDRESS": "A physical mailing or residential address describing a real-world location.",
+    "POSTAL_CODE": "A postal or ZIP code used for mail routing.",
   
     # 2) Public Identification Number
-    PERSONAL_CUSTOMS_ID, RESIDENT_ID, PASSPORT, DRIVER_LICENSE, FOREIGNER_ID, HEALTH_INSURANCE_ID, BUSINESS_ID, MILITARY_ID,
+    "PERSONAL_CUSTOMS_ID": "National personal customs identifier issued for imports/exports.",
+    "RESIDENT_ID": "National resident registration number uniquely identifying an individual.",
+    "PASSPORT": "Government-issued passport identifier.",
+    "DRIVER_LICENSE": "Driver’s license number issued by a licensing authority.",
+    "FOREIGNER_ID": "Government-issued foreign resident registration number.",
+    "HEALTH_INSURANCE_ID": "Identifier tied to public or private health insurance enrollment.",
+    "BUSINESS_ID": "Government-issued business or corporate registration number.",
+    "MILITARY_ID": "Military service identification number.",
 
     # 3) Authentication Information
-    JWT, API_KEY, GITHUB_PAT, PRIVATE_KEY,
+    "JWT": "A JSON Web Token string used for authentication/authorization.",
+    "API_KEY": "A service-issued credential granting API access.",
+    "GITHUB_PAT": "A GitHub Personal Access Token granting repository/API permissions.",
+    "PRIVATE_KEY": "A cryptographic private key string (e.g., SSH/TLS/PGP).",
 
     # 4) Finanacial Information
-    CARD_NUMBER, CARD_EXPIRY, BANK_ACCOUNT, CARD_CVV, PAYMENT_PIN, MOBILE_PAYMENT_PIN, PAYMENT_URI_QR,
+    "CARD_NUMBER": "A payment card primary account number used for transactions.",
+    "CARD_EXPIRY": "A payment card expiration date indicating validity period.",
+    "BANK_ACCOUNT": "A bank account identifier used for funds transfer.",
+    "CARD_CVV": "A payment card security code used for card-not-present verification.",
+    "PAYMENT_PIN": "A 4-digit personal identification number for banking or card use.",
+    "MOBILE_PAYMENT_PIN": "A 6-digit PIN used to authorize mobile payments.",
+    "PAYMENT_URI_QR": "A payment-intent string or encoded QR payload initiating a transaction.",
 
     # 5) Cryptocurrency Information
-    MNEMONIC, CRYPTO_PRIVATE_KEY, HD_WALLET,
+    "MNEMONIC": "A seed phrase of ordered words used to derive wallet keys.",
+    "CRYPTO_PRIVATE_KEY": "A private key enabling control of cryptocurrency assets.",
+    "HD_WALLET": "An extended key for hierarchical deterministic wallets (private/public).",
 
     # 6) Network Information + etc
-    IPV4, IPV6, MAC_ADDRESS, IMEI
+    "IPV4": "An IPv4 network address identifying a host on a network.",
+    "IPV6": "An IPv6 network address identifying a host on a network.",
+    "MAC_ADDRESS": "A hardware-layer media access control address for a network interface.",
+    "IMEI": "A device identifier for mobile equipment used on cellular networks."
     """
     )
 
