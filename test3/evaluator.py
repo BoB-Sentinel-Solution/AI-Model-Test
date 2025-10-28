@@ -222,19 +222,21 @@ def infer_once(tok, model, prompt: str, max_new_tokens: int = 96) -> Dict[str, A
 
     out = "".join(buf).strip()
     ttft_ms = (ft - t0) * 1000 if ft else None
+    e2e_ms = (t1 - t0) * 1000  # NEW: 전체 응답 시간(ms) — 마지막 토큰까지
     toks = len(tok.encode(out, add_special_tokens=False))
-    tok_s = (toks / (t1 - ft)) if ft else None
+    tok_s = (toks / (t1 - ft)) if ft and (t1 - ft) > 0 else None
 
     parsed = parse_json_block(out)
     return {
         "prompt": prompt,
-        "raw": out,
+        "raw": out,  # assistant 원문
         "json": parsed,
         "json_ok": parsed is not None and isinstance(parsed.get("has_sensitive", None), (bool, int)) and isinstance(parsed.get("entities", None), list),
         "has_sensitive": (parsed or {}).get("has_sensitive", None),
         "entity_cnt": len((parsed or {}).get("entities", []) or []),
         "entity_types": [e.get("type") for e in (parsed or {}).get("entities", []) if isinstance(e, dict) and "type" in e],
         "ttft_ms": ttft_ms,
+        "e2e_ms": e2e_ms,  # NEW
         "tok_s": tok_s,
     }
 
@@ -261,12 +263,17 @@ def summarize(records: List[Dict[str, Any]],
     types = Counter(t for r in records for t in (r["entity_types"] or []))
 
     ttft_vals = [r["ttft_ms"] for r in records]
+    e2e_vals = [r["e2e_ms"] for r in records if r.get("e2e_ms") is not None]  # NEW
     toks_vals = [r["tok_s"] for r in records]
 
     # 정상 프롬프트 FPR: has_sensitive == True 비율
     fpr = None
     if normals:
         fpr = sum(1 for r in normals if r["json_ok"] and bool(r["has_sensitive"])) / len(normals)
+
+    # 평균 속도/지연
+    avg_e2e = statistics.mean(e2e_vals) if e2e_vals else None  # NEW
+    avg_tok_s = statistics.mean([v for v in toks_vals if v is not None]) if any(toks_vals) else None  # NEW
 
     return {
         "total": n,
@@ -278,16 +285,22 @@ def summarize(records: List[Dict[str, Any]],
             "p50": safe_percentile(ttft_vals, 0.50),
             "p95": safe_percentile(ttft_vals, 0.95),
         },
+        "e2e_ms": {  # NEW
+            "p50": safe_percentile(e2e_vals, 0.50),
+            "p95": safe_percentile(e2e_vals, 0.95),
+            "avg": avg_e2e,
+        },
         "tok_s": {
             "p50": safe_percentile(toks_vals, 0.50),
             "p95": safe_percentile(toks_vals, 0.95),
+            "avg": avg_tok_s,  # NEW
         },
         "normal_fpr": fpr,
     }
 
 def save_csv(path: str, rows: List[Dict[str, Any]]):
     fields = ["idx", "prompt", "json_ok", "has_sensitive", "entity_cnt",
-              "entity_types", "ttft_ms", "tok_s", "raw"]
+              "entity_types", "ttft_ms", "e2e_ms", "tok_s", "raw"]  # NEW: e2e_ms
     with open(path, "w", newline="", encoding="utf-8") as f:
         w = csv.DictWriter(f, fieldnames=fields)
         w.writeheader()
@@ -300,6 +313,7 @@ def save_csv(path: str, rows: List[Dict[str, Any]]):
                 "entity_cnt": r["entity_cnt"],
                 "entity_types": ";".join(r["entity_types"] or []),
                 "ttft_ms": f"{r['ttft_ms']:.2f}" if r["ttft_ms"] else "",
+                "e2e_ms": f"{r['e2e_ms']:.2f}" if r.get("e2e_ms") else "",  # NEW
                 "tok_s": f"{r['tok_s']:.2f}" if r["tok_s"] else "",
                 "raw": r["raw"],
             })
@@ -332,7 +346,9 @@ def main():
         print(f"\n--- SENSITIVE TEST #{i} ---")
         print("prompt:", p)
         print("ttft_ms:", f"{r['ttft_ms']:.2f}" if r["ttft_ms"] else "NA",
+              "| e2e_ms:", f"{r['e2e_ms']:.2f}" if r.get("e2e_ms") else "NA",
               "| tok/s:", f"{r['tok_s']:.2f}" if r["tok_s"] else "NA")
+        print("assistant_raw:", r["raw"])  # NEW: AI 응답 원문 출력
         print("parsed_json:", json.dumps(r["json"], ensure_ascii=False) if r["json"] is not None else "None")
 
     # 정상 프롬프트 실행(FPR)
@@ -344,7 +360,9 @@ def main():
             print(f"\n--- NORMAL TEST #{i} ---")
             print("prompt:", p)
             print("ttft_ms:", f"{r['ttft_ms']:.2f}" if r["ttft_ms"] else "NA",
+                  "| e2e_ms:", f"{r['e2e_ms']:.2f}" if r.get("e2e_ms") else "NA",
                   "| tok/s:", f"{r['tok_s']:.2f}" if r["tok_s"] else "NA")
+            print("assistant_raw:", r["raw"])  # NEW
             print("parsed_json:", json.dumps(r["json"], ensure_ascii=False) if r["json"] is not None else "None")
 
     # 요약
@@ -356,9 +374,19 @@ def main():
     print(f"Avg entities/sample: {summary['avg_entities_per_sample']:.2f}")
     print("Entity types:", json.dumps(summary["entity_type_distribution"], ensure_ascii=False))
     ttft_p50 = summary["ttft_ms"]["p50"]; ttft_p95 = summary["ttft_ms"]["p95"]
-    tok_p50 = summary["tok_s"]["p50"]; tok_p95 = summary["tok_s"]["p95"]
+    e2e_p50 = summary["e2e_ms"]["p50"]; e2e_p95 = summary["e2e_ms"]["p95"]; e2e_avg = summary["e2e_ms"]["avg"]
+    tok_p50 = summary["tok_s"]["p50"]; tok_p95 = summary["tok_s"]["p95"]; tok_avg = summary["tok_s"]["avg"]
+
     print(f"TTFT p50 / p95 (ms): {f'{ttft_p50:.2f}' if ttft_p50 else 'NA'} / {f'{ttft_p95:.2f}' if ttft_p95 else 'NA'}")
-    print(f"tok/s p50 / p95: {f'{tok_p50:.2f}' if tok_p50 else 'NA'} / {f'{tok_p95:.2f}' if tok_p95 else 'NA'}")
+    print(f"E2E latency p50 / p95 / avg (ms): "
+          f"{f'{e2e_p50:.2f}' if e2e_p50 else 'NA'} / "
+          f"{f'{e2e_p95:.2f}' if e2e_p95 else 'NA'} / "
+          f"{f'{e2e_avg:.2f}' if e2e_avg else 'NA'}")  # NEW: 평균 응답속도(지연) 출력
+    print(f"tok/s p50 / p95 / avg: "
+          f"{f'{tok_p50:.2f}' if tok_p50 else 'NA'} / "
+          f"{f'{tok_p95:.2f}' if tok_p95 else 'NA'} / "
+          f"{f'{tok_avg:.2f}' if tok_avg else 'NA'}")  # NEW
+
     if summary["normal_fpr"] is not None:
         print(f"Normal FPR: {pct(summary['normal_fpr'])}")
 
